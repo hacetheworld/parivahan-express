@@ -17,7 +17,7 @@ export function renderStepDocumentStudio(formData, onUpdateField) {
           Inline Media Studio (Document Uploads)
         </h2>
         <button type="button" id="voice-doc-btn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-medium rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors">
-          <span>🔊</span> Listen Guide
+          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> Listen Guide
         </button>
       </div>
       <p class="text-xs text-slate-400">
@@ -47,7 +47,7 @@ export function renderStepDocumentStudio(formData, onUpdateField) {
               </div>
             ` : `
               <div class="text-center p-4 space-y-2 text-slate-500">
-                <div class="text-3xl">📷</div>
+                <i data-lucide="camera" class="w-8 h-8 mx-auto"></i>
                 <div class="text-xs font-medium text-slate-400">Aspect Ratio 3:4 (Passport Style)</div>
                 <div class="text-[11px] text-slate-500">Auto Contrast & Compression Engine</div>
               </div>
@@ -58,7 +58,8 @@ export function renderStepDocumentStudio(formData, onUpdateField) {
         <div class="pt-2">
           <input type="file" id="photo-file-input" accept="image/jpeg,image/png,image/jpg" class="hidden" />
           <button type="button" id="photo-upload-btn" class="w-full py-2.5 bg-emerald-600/90 hover:bg-emerald-500 text-white font-medium text-sm rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
-            <span>${formData.photoDataUrl ? '✨ Adjust in Media Studio' : '📤 Upload & Crop Photo'}</span>
+            <i data-lucide="${formData.photoDataUrl ? 'sparkles' : 'upload'}" class="w-4 h-4"></i>
+            <span>${formData.photoDataUrl ? 'Adjust in Media Studio' : 'Upload & Crop Photo'}</span>
           </button>
         </div>
       </div>
@@ -82,7 +83,7 @@ export function renderStepDocumentStudio(formData, onUpdateField) {
               </div>
             ` : `
               <div class="text-center p-4 space-y-2 text-slate-500">
-                <div class="text-3xl">✍️</div>
+                <i data-lucide="pen-line" class="w-8 h-8 mx-auto"></i>
                 <div class="text-xs font-medium text-slate-400">Aspect Ratio 3:1 (White Background)</div>
                 <div class="text-[11px] text-slate-500">Auto Background Monochrome Cleaner</div>
               </div>
@@ -93,7 +94,8 @@ export function renderStepDocumentStudio(formData, onUpdateField) {
         <div class="pt-2">
           <input type="file" id="signature-file-input" accept="image/jpeg,image/png,image/jpg" class="hidden" />
           <button type="button" id="signature-upload-btn" class="w-full py-2.5 bg-emerald-600/90 hover:bg-emerald-500 text-white font-medium text-sm rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
-            <span>${formData.signatureDataUrl ? '✨ Clean Signature Background' : '📤 Upload & Crop Signature'}</span>
+            <i data-lucide="${formData.signatureDataUrl ? 'sparkles' : 'upload'}" class="w-4 h-4"></i>
+            <span>${formData.signatureDataUrl ? 'Clean Signature Background' : 'Upload & Crop Signature'}</span>
           </button>
         </div>
       </div>

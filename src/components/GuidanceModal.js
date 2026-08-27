@@ -18,7 +18,7 @@ export function renderGuidanceModal(topic, onClose) {
 
         <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-700/80 space-y-2">
           <div class="flex items-center gap-2 text-amber-400 font-semibold text-xs uppercase tracking-wider">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d=" "></path></svg>
+            <i data-lucide="message-square-text" class="w-4 h-4"></i>
             SMS Search Tip
           </div>
           <p class="text-xs text-slate-400">Open your mobile SMS app and search for messages from sender IDs starting with:</p>
@@ -66,11 +66,11 @@ export function renderGuidanceModal(topic, onClose) {
     <div class="civic-card max-w-md w-full p-6 space-y-4 shadow-2xl relative border border-slate-700">
       <div class="flex items-center justify-between border-b border-slate-700 pb-3">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <span class="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg">💡</span>
+          <span class="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg flex items-center justify-center"><i data-lucide="lightbulb" class="w-4 h-4"></i></span>
           ${title}
         </h3>
         <button id="close-guidance-btn" class="p-1 text-slate-400 hover:text-white rounded-lg transition-colors">
-          ✕
+          <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
@@ -85,6 +85,7 @@ export function renderGuidanceModal(topic, onClose) {
   `;
 
   document.body.appendChild(modalOverlay);
+  if (window.lucide) window.lucide.createIcons();
 
   const closeFn = () => {
     modalOverlay.remove();

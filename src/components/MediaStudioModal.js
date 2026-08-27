@@ -19,8 +19,8 @@ export function openMediaStudioModal({ file, mode = 'photo', onSave, onClose }) 
       <!-- Modal Header -->
       <div class="flex items-center justify-between border-b border-slate-700 pb-3">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-500/30">
-            ${isPhoto ? '📷' : '✍️'}
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+            <i data-lucide="${isPhoto ? 'camera' : 'pen-line'}" class="w-5 h-5"></i>
           </div>
           <div>
             <h3 class="text-base font-bold text-white">
@@ -31,7 +31,7 @@ export function openMediaStudioModal({ file, mode = 'photo', onSave, onClose }) 
             </p>
           </div>
         </div>
-        <button id="close-studio-btn" class="p-1 text-slate-400 hover:text-white rounded-lg transition-colors">✕</button>
+        <button id="close-studio-btn" class="p-1 text-slate-400 hover:text-white rounded-lg transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
       <!-- Live Canvas Workspace -->
@@ -51,7 +51,7 @@ export function openMediaStudioModal({ file, mode = 'photo', onSave, onClose }) 
         <!-- Zoom Slider -->
         <div class="space-y-1">
           <div class="flex justify-between text-xs text-slate-300">
-            <label class="font-medium flex items-center gap-1">🔍 Scale / Zoom</label>
+            <label class="font-medium flex items-center gap-1"><i data-lucide="zoom-in" class="w-3.5 h-3.5"></i> Scale / Zoom</label>
             <span id="zoom-val-text" class="text-emerald-400 font-mono">1.0x</span>
           </div>
           <input type="range" id="zoom-slider" min="0.5" max="3" step="0.05" value="1" class="w-full accent-emerald-500 bg-slate-800 rounded-lg h-2 cursor-pointer" />
@@ -85,6 +85,7 @@ export function openMediaStudioModal({ file, mode = 'photo', onSave, onClose }) 
   `;
 
   document.body.appendChild(modalOverlay);
+  if (window.lucide) window.lucide.createIcons();
 
   const canvas = modalOverlay.querySelector('#studio-canvas');
   const zoomSlider = modalOverlay.querySelector('#zoom-slider');

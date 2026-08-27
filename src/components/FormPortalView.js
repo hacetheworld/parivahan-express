@@ -8,9 +8,11 @@ export function renderFormPortalView({
   currentStep = 1,
   saveStatus = 'saved',
   savedTime = 'Just now',
-  isOnline = true,
+  touchedFields,
   onUpdateField,
+  onFieldBlur,
   onNavigateStep,
+  onAttemptNext,
   onBackToLanding,
   onClearDraft
 }) {
@@ -25,7 +27,7 @@ export function renderFormPortalView({
         <!-- Left: Back Button & Title -->
         <div class="flex items-center gap-3">
           <button id="back-to-landing-btn" class="p-2 text-slate-400 hover:text-white hover:bg-slate-900 rounded-xl transition-colors text-sm font-semibold flex items-center gap-1">
-            <span>←</span> <span class="hidden sm:inline">Landing</span>
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> <span class="hidden sm:inline">Landing</span>
           </button>
           <div>
             <h1 class="text-base font-extrabold text-white">Parivahan Express</h1>
@@ -37,14 +39,8 @@ export function renderFormPortalView({
         <div class="flex items-center gap-2.5">
           <!-- Voice Assistant Language Switcher -->
           <button type="button" id="toggle-voice-lang" class="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 rounded-xl transition-colors font-medium flex items-center gap-1">
-            <span>🗣️</span> <span id="voice-lang-label">EN</span>
+            <i data-lucide="languages" class="w-3.5 h-3.5"></i> <span id="voice-lang-label">EN</span>
           </button>
-
-          <!-- Network Status Pill -->
-          <div class="px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 ${isOnline ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border border-amber-500/30 animate-pulse'}">
-            <span class="w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-amber-400'}"></span>
-            <span class="hidden sm:inline">${isOnline ? 'Online' : 'Offline Caching Active'}</span>
-          </div>
 
           <!-- Auto Save Status Badge -->
           <div class="px-3 py-1 rounded-full text-xs font-mono bg-slate-900 border border-slate-800 text-slate-400 flex items-center gap-1.5">
@@ -85,18 +81,22 @@ export function renderFormPortalView({
       <div id="step-content-mount"></div>
 
       <!-- Bottom Step Navigation Footer -->
-      <div class="flex items-center justify-between pt-4 border-t border-slate-900">
-        <button id="prev-step-btn" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-sm rounded-xl border border-slate-800 transition-colors ${currentStep === 1 ? 'invisible' : ''}">
-          ← Previous Step
-        </button>
+      <div class="pt-4 border-t border-slate-900 space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <button id="prev-step-btn" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-sm rounded-xl border border-slate-800 transition-colors flex items-center gap-1.5 ${currentStep === 1 ? 'invisible' : ''}">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Previous
+          </button>
 
-        <button id="clear-draft-btn" class="text-xs text-red-400 hover:underline">
-          Clear Saved Draft
-        </button>
+          <button id="next-step-btn" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-emerald-900/30 flex items-center gap-1.5 ${currentStep === 3 ? 'hidden' : ''}">
+            Next Step <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
 
-        <button id="next-step-btn" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-emerald-900/30 ${currentStep === 3 ? 'hidden' : ''}">
-          Next Step →
-        </button>
+        <div class="flex justify-center sm:justify-end">
+          <button id="clear-draft-btn" class="px-2 py-1.5 text-xs text-red-400 hover:text-red-300 hover:underline flex items-center gap-1.5">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear Saved Draft
+          </button>
+        </div>
       </div>
 
     </main>
@@ -105,7 +105,7 @@ export function renderFormPortalView({
   // Mount active step component
   const mount = container.querySelector('#step-content-mount');
   if (currentStep === 1) {
-    mount.appendChild(renderStepIdentity(formData, onUpdateField));
+    mount.appendChild(renderStepIdentity(formData, onUpdateField, { touchedFields, onFieldBlur }));
   } else if (currentStep === 2) {
     mount.appendChild(renderStepDocumentStudio(formData, onUpdateField));
   } else if (currentStep === 3) {
@@ -123,7 +123,7 @@ export function renderFormPortalView({
   });
 
   container.querySelector('#next-step-btn').addEventListener('click', () => {
-    if (currentStep < 3) onNavigateStep(currentStep + 1);
+    if (currentStep < 3) onAttemptNext();
   });
 
   container.querySelector('#clear-draft-btn').addEventListener('click', () => {

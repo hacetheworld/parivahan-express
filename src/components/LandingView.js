@@ -7,8 +7,8 @@ export function renderLandingView(onStart) {
     <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40">
       <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-emerald-900/40">
-            P
+          <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-900/40">
+            <i data-lucide="car-front" class="w-5 h-5"></i>
           </div>
           <div>
             <h1 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
@@ -64,8 +64,8 @@ export function renderLandingView(onStart) {
         
         <!-- Card 1 -->
         <div class="civic-card p-6 space-y-3 civic-card-hover border-slate-800">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl font-bold border border-emerald-500/20">
-            🖼️
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+            <i data-lucide="crop" class="w-6 h-6"></i>
           </div>
           <h3 class="text-base font-bold text-white">Inline Canvas Media Studio</h3>
           <p class="text-xs text-slate-400 leading-relaxed">
@@ -75,8 +75,8 @@ export function renderLandingView(onStart) {
 
         <!-- Card 2 -->
         <div class="civic-card p-6 space-y-3 civic-card-hover border-slate-800">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl font-bold border border-emerald-500/20">
-            💾
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+            <i data-lucide="database-zap" class="w-6 h-6"></i>
           </div>
           <h3 class="text-base font-bold text-white">Zero-Loss Offline Engine</h3>
           <p class="text-xs text-slate-400 leading-relaxed">
@@ -86,8 +86,8 @@ export function renderLandingView(onStart) {
 
         <!-- Card 3 -->
         <div class="civic-card p-6 space-y-3 civic-card-hover border-slate-800">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl font-bold border border-emerald-500/20">
-            🎯
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
           </div>
           <h3 class="text-base font-bold text-white">Pre-Flight Verification</h3>
           <p class="text-xs text-slate-400 leading-relaxed">

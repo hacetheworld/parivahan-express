@@ -81,8 +81,49 @@ export const ERROR_DICTIONARY = {
     title: 'Network Connection Offline',
     message: 'Mobile network lost. All form inputs and images are cached offline on your phone using IndexedDB.',
     action: 'Continue filling the form; data will submit automatically once reconnected.'
+  },
+  ERR_SERVER_TIMEOUT_500: {
+    code: 'ERR_SERVER_TIMEOUT_500',
+    title: 'Parivahan Sewa Server Timeout',
+    message: 'The government portal server took too long to respond (HTTP 500). This is a temporary server-side issue, not a problem with your application.',
+    action: 'Your data is safely cached on your device. Wait a moment and tap "Simulate Portal Submission" again.'
+  },
+  ERR_GATEWAY_502: {
+    code: 'ERR_GATEWAY_502',
+    title: 'Portal Gateway Unreachable',
+    message: 'The Parivahan Sewa gateway rejected the connection (HTTP 502), likely due to high traffic on the government server.',
+    action: 'No data was lost. Retry submission in a few minutes.'
+  },
+  ERR_VALIDATION_409: {
+    code: 'ERR_VALIDATION_409',
+    title: 'Server-Side Record Conflict',
+    message: 'The portal reported a conflict (HTTP 409) with an existing application record for this Licence/Application Number.',
+    action: 'Double-check your Licence / Application Number on Step 1, then resubmit.'
   }
 };
+
+/**
+ * Maps form fields to the error codes above, so field-level UI can show only the
+ * error(s) relevant to that field instead of the full checklist.
+ */
+export const FIELD_ERROR_MAP = {
+  state: ['ERR_STATE_REQUIRED'],
+  rto: ['ERR_RTO_REQUIRED'],
+  fullName: ['ERR_NAME_INVALID'],
+  dob: ['ERR_DOB_FORMAT', 'ERR_AGE_UNDERAGE_LL', 'ERR_AGE_UNDERAGE_DL'],
+  mobile: ['ERR_MOBILE_INVALID'],
+  dlNo: ['ERR_DL_FORMAT'],
+  photoDataUrl: ['ERR_PHOTO_MISSING', 'ERR_PHOTO_SIZE_EXCEEDED'],
+  signatureDataUrl: ['ERR_SIGNATURE_MISSING', 'ERR_SIGNATURE_SIZE_EXCEEDED']
+};
+
+/**
+ * Get validation errors relevant to a single field (for inline field-level display).
+ */
+export function getFieldErrors(formData, fieldName) {
+  const codes = FIELD_ERROR_MAP[fieldName] || [];
+  return validateFormState(formData).filter(err => codes.includes(err.code));
+}
 
 /**
  * Validate form fields and return array of error objects

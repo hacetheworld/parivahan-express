@@ -1,6 +1,7 @@
 import { calculateReadinessScore, validateFormState } from '../utils/errorDictionary.js';
 import { downloadApplicationReceipt } from '../utils/exportEngine.js';
 import { speechAssistant } from '../utils/speechAssistant.js';
+import { explainErrorCode, simulateServerError } from '../utils/codexAssistant.js';
 
 export function renderStepPreFlight(formData, onNavigateStep) {
   const container = document.createElement('div');
@@ -32,7 +33,7 @@ export function renderStepPreFlight(formData, onNavigateStep) {
           Pre-Flight Verification & Readiness Scoring
         </h2>
         <button type="button" id="voice-preflight-btn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-medium rounded-lg border border-slate-700 flex items-center gap-1.5 transition-colors">
-          <span>🔊</span> Listen Score
+          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> Listen Score
         </button>
       </div>
       <p class="text-xs text-slate-400">
@@ -74,7 +75,7 @@ export function renderStepPreFlight(formData, onNavigateStep) {
 
         <div class="pt-2 flex justify-end">
           <button type="button" id="export-json-btn" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 text-xs font-medium rounded-xl transition-colors flex items-center gap-1.5">
-            <span>📥</span> Download Draft Receipt (JSON)
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> Download Draft Receipt (JSON)
           </button>
         </div>
       </div>
@@ -83,7 +84,7 @@ export function renderStepPreFlight(formData, onNavigateStep) {
     <!-- Application Preview Summary Card -->
     <div class="civic-card p-6 space-y-4 border-slate-700">
       <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-        <span>📋</span> Application Pre-Submission Summary
+        <i data-lucide="clipboard-check" class="w-4 h-4"></i> Application Pre-Submission Summary
       </h3>
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -123,15 +124,15 @@ export function renderStepPreFlight(formData, onNavigateStep) {
     <!-- Issues & Remediation Checklist -->
     <div class="civic-card p-6 space-y-4 border-slate-700">
       <h3 class="text-sm font-bold text-white flex items-center justify-between border-b border-slate-800 pb-3">
-        <span>🛡️ Client-Side Error Interceptor Checklist</span>
-        <span class="text-xs px-2.5 py-1 rounded-full ${errors.length === 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'} font-semibold">
-          ${errors.length === 0 ? '✓ 0 Interceptor Issues' : `⚠ ${errors.length} Issues Found`}
+        <span class="flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4"></i> Client-Side Error Interceptor Checklist</span>
+        <span class="text-xs px-2.5 py-1 rounded-full flex items-center gap-1 ${errors.length === 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'} font-semibold">
+          <i data-lucide="${errors.length === 0 ? 'check' : 'alert-triangle'}" class="w-3 h-3"></i> ${errors.length === 0 ? '0 Interceptor Issues' : `${errors.length} Issues Found`}
         </span>
       </h3>
 
       ${errors.length === 0 ? `
         <div class="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/30 flex items-center gap-3 text-emerald-400 text-xs font-semibold">
-          <span class="text-xl">✅</span>
+          <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
           <span>Zero pre-flight errors! Application structure, photo size (≤20 KB), signature background, and format validations are 100% verified.</span>
         </div>
       ` : `
@@ -140,7 +141,7 @@ export function renderStepPreFlight(formData, onNavigateStep) {
             <div class="p-4 bg-slate-900 rounded-xl border border-red-500/30 flex items-start justify-between gap-4">
               <div class="space-y-1">
                 <div class="text-xs font-bold text-red-400 flex items-center gap-1.5">
-                  <span>⚠</span> ${err.title}
+                  <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> ${err.title}
                 </div>
                 <div class="text-xs text-slate-300">${err.message}</div>
                 <div class="text-[11px] text-emerald-400 font-medium pt-0.5">Solution: ${err.action}</div>
@@ -157,7 +158,8 @@ export function renderStepPreFlight(formData, onNavigateStep) {
     <!-- Final Submission Action -->
     <div class="pt-4 flex justify-end">
       <button type="button" id="final-submit-btn" class="px-8 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl transition-all shadow-xl shadow-emerald-900/50 flex items-center gap-2 hover:scale-[1.02]">
-        <span>🚀 Simulate Portal Submission</span>
+        <i data-lucide="rocket" class="w-4 h-4"></i>
+        <span>Simulate Portal Submission</span>
         <span class="text-xs bg-emerald-700 px-2.5 py-1 rounded-lg">Zero Failure</span>
       </button>
     </div>
@@ -182,18 +184,59 @@ export function renderStepPreFlight(formData, onNavigateStep) {
   });
 
   // Final Simulation Submit Modal
-  container.querySelector('#final-submit-btn').addEventListener('click', () => {
+  container.querySelector('#final-submit-btn').addEventListener('click', async (e) => {
     if (errors.length > 0) {
       alert(`Pre-Flight Check: Please resolve ${errors.length} issue(s) before submitting.`);
       return;
     }
 
+    const submitBtn = e.currentTarget;
+    const originalBtnHtml = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<span>Dispatching to Parivahan Sewa Server...</span>`;
+
+    // Simulate a logistics-server round trip; the returned code (if any) is
+    // resolved into a friendly explanation via the codex helper.
+    const simulatedCode = simulateServerError();
+    const serverError = simulatedCode ? await explainErrorCode(simulatedCode) : null;
+
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalBtnHtml;
+
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-lg animate-fade-in';
+
+    if (serverError) {
+      modal.innerHTML = `
+        <div class="civic-card max-w-md w-full p-6 space-y-5 text-center border-red-500/50">
+          <div class="w-16 h-16 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 flex items-center justify-center mx-auto">
+            <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+          </div>
+          <div class="space-y-2">
+            <h3 class="text-xl font-extrabold text-white">${serverError.title}</h3>
+            <p class="text-xs text-slate-300">${serverError.message}</p>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs font-mono text-amber-400 text-left">
+            <span class="text-slate-500">Solution:</span> ${serverError.action}
+          </div>
+          <div class="p-2 bg-slate-900/60 rounded-lg border border-slate-800 text-[11px] font-mono text-slate-500">
+            Server Code: ${serverError.code}
+          </div>
+          <button id="close-error-modal" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition-colors">
+            Retry Submission
+          </button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      if (window.lucide) window.lucide.createIcons();
+      modal.querySelector('#close-error-modal').addEventListener('click', () => modal.remove());
+      return;
+    }
+
     modal.innerHTML = `
       <div class="civic-card max-w-md w-full p-6 space-y-5 text-center border-emerald-500/50">
-        <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-3xl mx-auto">
-          🎉
+        <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto">
+          <i data-lucide="party-popper" class="w-8 h-8"></i>
         </div>
         <div class="space-y-2">
           <h3 class="text-xl font-extrabold text-white">Pre-Flight Verification Complete!</h3>
@@ -210,6 +253,7 @@ export function renderStepPreFlight(formData, onNavigateStep) {
       </div>
     `;
     document.body.appendChild(modal);
+    if (window.lucide) window.lucide.createIcons();
     modal.querySelector('#close-success-modal').addEventListener('click', () => {
       modal.remove();
       window.location.reload();
